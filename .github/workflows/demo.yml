@@ -1,0 +1,25 @@
+name: Security Check Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Scan for API Keys or Secrets
+        run: |
+          echo "Scanning for sensitive data..."
+          if grep -r -i -E '(api_key|secret|password|token)' --exclude-dir={.git,.github} .; then
+            echo "🚨 Security Issue Found! Failing the workflow."
+            exit 1
+          else
+            echo "✅ No security issues found."
+          fi
+
